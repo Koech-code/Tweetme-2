@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 from profiles.serializers import PublicProfileSerializer
-from .models import Tweet
+from .models import Tweet, UploadVideo, PostImage, CommentVideo, CommentImage
 
 MAX_TWEET_LENGTH = settings.MAX_TWEET_LENGTH
 TWEET_ACTION_OPTIONS = settings.TWEET_ACTION_OPTIONS
@@ -55,3 +55,25 @@ class TweetSerializer(serializers.ModelSerializer):
 
     def get_likes(self, obj):
         return obj.likes.count()
+
+
+
+class VideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadVideo
+        fields = ('user', 'videoname', 'video', 'about')
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostImage
+        fields = ('imagename', 'image', 'description')
+
+class CommentVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentVideo
+        fields = ('uploadedvideo', 'comment')
+
+class CommentImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentImage
+        fields = ('postedimage', 'comment')
