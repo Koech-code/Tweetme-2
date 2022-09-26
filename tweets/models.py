@@ -1,4 +1,5 @@
 import random
+from unicodedata import name
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
@@ -34,7 +35,7 @@ class TweetManager(models.Manager):
 class Tweet(models.Model):
     # Maps to SQL data
     # id = models.AutoField(primary_key=True)
-    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+    # parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tweets") # many users can many tweets
     likes = models.ManyToManyField(User, related_name='tweet_user', blank=True, through=TweetLike)
     content = models.TextField(blank=True, null=True)
@@ -61,3 +62,36 @@ class Tweet(models.Model):
             "content": self.content,
             "likes": random.randint(0, 200)
         }
+
+class PostImage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    imagename = models.CharField(max_length=50)
+    image = models.FileField(upload_to='images/', blank=True, null=True)
+    description = models.TextField(max_length=500, null=True)
+
+    def __str__(self):
+        return self.imagename
+
+
+class UploadVideo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    videoname = models.CharField(max_length=50)
+    video = models.FileField(upload_to='videos/', blank=True, null=True)
+    about = models.TextField(max_length=500, null=True)
+
+    def __str__(self):
+        return self.videoname
+
+
+class CommentImage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    postedimage = models.ForeignKey(PostImage, on_delete=models.CASCADE, related_name="postedimage")
+    comment = models.TextField(max_length=1000, null=False)
+
+
+class CommentVideo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    uploadedvideo = models.ForeignKey(PostImage, on_delete=models.CASCADE, related_name="uploadedvideo")
+    comment = models.TextField(max_length=1000, null=False)
+
+  
