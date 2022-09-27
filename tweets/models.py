@@ -86,12 +86,12 @@ class UploadVideo(models.Model):
 class CommentImage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     postedimage = models.ForeignKey(PostImage, on_delete=models.CASCADE, related_name="postedimage")
-    comment = models.TextField(max_length=1000, null=False)
+    comment = models.CharField(max_length=275, null=False)
 
 
 class CommentVideo(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    uploadedvideo = models.ForeignKey(PostImage, on_delete=models.CASCADE, related_name="uploadedvideo")
-    comment = models.TextField(max_length=1000, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    uploadedvideo = models.ForeignKey(UploadVideo, on_delete=models.CASCADE, related_name="uploadedvideo")
+    comment = models.CharField(max_length=275, null=False)
 
   
