@@ -66,14 +66,14 @@ class VideoSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
-        fields = ('imagename', 'image', 'description')
+        fields = ('user','imagename', 'image', 'description')
 
 class CommentVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentVideo
-        fields = ('uploadedvideo', 'comment')
+        fields = ('user','uploadedvideo', 'comment')
 
 class CommentImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentImage
-        fields = ('postedimage', 'comment')
+        fields = ('user','postedimage', 'comment')
