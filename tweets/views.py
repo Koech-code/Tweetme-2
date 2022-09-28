@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.shortcuts import render, redirect
-from django.utils.http import is_safe_url
+
 from .models import UploadVideo, PostImage, CommentImage, CommentVideo
 from .serializers import VideoSerializer, ImageSerializer, CommentImageSerializer, CommentVideoSerializer
 from tweets import serializers
