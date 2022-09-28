@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'profiles',
     'tweets',
     'drf_yasg',
+    'django_heroku',
 ]
 
 REST_FRAMEWORK = {
