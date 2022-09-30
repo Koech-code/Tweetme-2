@@ -1,5 +1,7 @@
 import React from 'react'
 import {apiTweetCreate} from './lookup'
+import List from './uploads'
+import PostImageForm from './videos'
 
 
 export function TweetCreate(props){
@@ -22,7 +24,11 @@ export function TweetCreate(props){
       textAreaRef.current.value = ''
     }
     return <div className={props.className}>
+      <div><PostImageForm></PostImageForm></div>
+     <div><List></List></div>
+     
           <form onSubmit={handleSubmit}>
+            
             <textarea ref={textAreaRef} required={true} className='form-control' name='tweet'>
 
             </textarea>
