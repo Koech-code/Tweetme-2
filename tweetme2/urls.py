@@ -35,7 +35,7 @@ from tweets.views import (
 urlpatterns = [
     path('', home_view),
     path('admin/', admin.site.urls),
-    path('', include('tweets.urls')),
+    
     path('global/', tweets_list_view),
     path('login/', login_view),
     path('logout/', logout_view),

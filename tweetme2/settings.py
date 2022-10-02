@@ -137,7 +137,14 @@ DATABASES = {
     }
 }
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -219,9 +226,10 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES
 }
 
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
 ]
+
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/

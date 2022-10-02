@@ -3,8 +3,13 @@ from unicodedata import name
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
+# from django.contrib.auth.models import User
 
 User = settings.AUTH_USER_MODEL
+
+# Set upload path and filename
+def upload_to(instance, filename):
+    return 'images/{filename}'.format(filename=filename)
 
 class TweetLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -35,11 +40,12 @@ class TweetManager(models.Manager):
 class Tweet(models.Model):
     # Maps to SQL data
     # id = models.AutoField(primary_key=True)
-    # parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tweets") # many users can many tweets
     likes = models.ManyToManyField(User, related_name='tweet_user', blank=True, through=TweetLike)
+    video = models.FileField(upload_to='videos/', blank=True, null=True)
+    image = models.FileField(upload_to=upload_to, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
-    image = models.FileField(upload_to='images/', blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     objects = TweetManager()
@@ -63,14 +69,10 @@ class Tweet(models.Model):
             "likes": random.randint(0, 200)
         }
 
-class PostImage(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    imagename = models.CharField(max_length=50)
-    image = models.FileField(upload_to='images/', blank=True, null=True)
-    description = models.TextField(max_length=500, null=True)
-
-    def __str__(self):
-        return self.imagename
+class CommentTweet(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default = "")
+    tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='commentweet')
+    body = models.CharField(max_length=1000, null=False)
 
 
 class UploadVideo(models.Model):
@@ -82,16 +84,13 @@ class UploadVideo(models.Model):
     def __str__(self):
         return self.videoname
 
-
-class CommentImage(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    postedimage = models.ForeignKey(PostImage, on_delete=models.CASCADE, related_name="postedimage")
-    comment = models.CharField(max_length=275, null=False)
-
-
 class CommentVideo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     uploadedvideo = models.ForeignKey(UploadVideo, on_delete=models.CASCADE, related_name="uploadedvideo")
     comment = models.CharField(max_length=275, null=False)
+
+
+
+
 
   

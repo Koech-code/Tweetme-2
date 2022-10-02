@@ -9,7 +9,7 @@ class List extends React.Component{
    }
 
    fetchdata(){
-      fetch('http://127.0.0.1:8000/videos/')
+      fetch('http://127.0.0.1:8000/api/tweets/getvideos/')
       .then(response=>response.json())
       .then((data) => {
          this.setState({
@@ -32,6 +32,7 @@ class List extends React.Component{
 
       </div>
       );
+      console.log(info)
       return(
       <p>hello api</p>
       )

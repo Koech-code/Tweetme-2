@@ -1,7 +1,8 @@
+from pyexpat import model
 from django.conf import settings
 from rest_framework import serializers
 from profiles.serializers import PublicProfileSerializer
-from .models import Tweet, UploadVideo, PostImage, CommentVideo, CommentImage
+from .models import Tweet, UploadVideo, CommentVideo, CommentTweet
 
 MAX_TWEET_LENGTH = settings.MAX_TWEET_LENGTH
 TWEET_ACTION_OPTIONS = settings.TWEET_ACTION_OPTIONS
@@ -24,7 +25,7 @@ class TweetCreateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Tweet
-        fields = ['user', 'id', 'content', 'likes', 'timestamp']
+        fields = ['user', 'id', 'content', 'image', 'video', 'likes', 'timestamp']
     
     def get_likes(self, obj):
         return obj.likes.count()
@@ -57,23 +58,30 @@ class TweetSerializer(serializers.ModelSerializer):
         return obj.likes.count()
 
 
+class CommentTweetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentVideo
+        fields = [
+            'user', 
+            'tweet', 
+            'body',
+            ]
 
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = UploadVideo
-        fields = ('user', 'videoname', 'video', 'about')
-
-class ImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostImage
-        fields = ('user','imagename', 'image', 'description')
+        fields = [
+            'user', 
+            'videoname', 
+            'video',
+            'about',
+            ]
 
 class CommentVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentVideo
-        fields = ('user','uploadedvideo', 'comment')
-
-class CommentImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CommentImage
-        fields = ('user','postedimage', 'comment')
+        fields = [
+            'user', 
+            'uploadedvideo', 
+            'comment',
+            ]

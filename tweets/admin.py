@@ -1,15 +1,15 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Tweet, TweetLike, PostImage, CommentImage, UploadVideo, CommentVideo
+from .models import Tweet, TweetLike, UploadVideo, CommentVideo, CommentTweet
 
 
 admin.site.register(Tweet)
+admin.site.register(CommentTweet)
 admin.site.register(TweetLike)
-admin.site.register(PostImage)
 admin.site.register(UploadVideo)
-admin.site.register(CommentImage)
 admin.site.register(CommentVideo)
+
 
 
 # class TweetLikeAdmin(admin.TabularInline):

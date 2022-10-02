@@ -10,11 +10,16 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from ..forms import TweetForm
-from ..models import Tweet
+from ..models import Tweet, UploadVideo, CommentVideo
+from rest_framework import status
+from rest_framework.views import APIView
 from ..serializers import (
     TweetSerializer, 
     TweetActionSerializer,
-    TweetCreateSerializer
+    TweetCreateSerializer,
+    CommentTweetSerializer,
+    VideoSerializer,
+    CommentVideoSerializer,
 )
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
@@ -94,7 +99,6 @@ def get_paginated_queryset_response(qs, request):
     serializer = TweetSerializer(paginated_qs, many=True, context={"request": request})
     return paginator.get_paginated_response(serializer.data) # Response( serializer.data, status=200)
 
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def tweet_feed_view(request, *args, **kwargs):
@@ -172,3 +176,105 @@ def tweet_detail_view_pure_django(request, tweet_id, *args, **kwargs):
         data['message'] = "Not found"
         status = 404
     return JsonResponse(data, status=status) # json.dumps content_type='application/json'
+
+# my views
+
+@api_view(['POST'])
+def create_tweet_view(request, *args, **kwags):
+    '''
+    Create a tweet
+    '''
+
+    serializers = TweetCreateSerializer(data=request.data)
+
+    if serializers.is_valid():
+        serializers.save()
+        return Response(serializers.data,
+        status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializers.errors, 
+        status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_tweet_view(request, *args, **kwags):
+    '''
+    See all tweets created by users
+    '''
+    tweets = Tweet.objects.all()
+    serializetweets = TweetCreateSerializer(tweets, many=True)
+    
+    return Response(serializetweets.data)
+
+@api_view(['POST'])
+def upload_video_view(request, *args, **kwags):
+    '''
+    Upload a video for other users to see and comment on.
+    '''
+    serializevideos = VideoSerializer(data=request.data)
+
+    if serializevideos.is_valid():
+        serializevideos.save()
+        return Response(serializevideos.data,
+        status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializevideos.errors, 
+        status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_videos_view(request, *args, **kwags):
+    '''
+    See all videos uploaded by users
+    '''
+    videos = UploadVideo.objects.all()
+    serializevideos = VideoSerializer(videos, many=True)
+    
+    return Response(serializevideos.data)
+
+@api_view(['POST'])
+def comment_tweet_view(request, *args, **kwags):
+    '''
+    Comment on a tweet made by a Youtweet user
+    '''
+    serializer = CommentTweetSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, 
+        status=status.HTTP_201_CREATED)            
+    else:
+        return Response(serializer.errors, 
+        status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def see_all_tweet_comments(request, id, *args, **kwags):
+    '''
+    See all comments made on a tweet
+    '''
+    commentedtweets = Tweet.objects.filter(tweet=id)
+    serializetweetcomments = CommentTweetSerializer(commentedtweets, many=True)
+
+    return Response(serializetweetcomments.data)
+
+@api_view(['POST'])
+def comment_video_view(request, *args, **kwags):
+    '''
+    Comment on a video uploaded by a Youtweet user
+    '''
+    serializer = CommentVideoSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, 
+        status=status.HTTP_201_CREATED)            
+    else:
+        return Response(serializer.errors, 
+        status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def see_all_video_comments(request, pk, *args, **kwags):
+    '''
+    See all comments made on an uploaded video
+    '''
+    commentedvideos = CommentVideo.objects.filter(uploadedvideo=pk)
+    serializevideocomments = CommentVideoSerializer(commentedvideos, many=True)
+
+    return Response(serializevideocomments.data)
+
