@@ -20,12 +20,11 @@ class TweetActionSerializer(serializers.Serializer):
 
 
 class TweetCreateSerializer(serializers.ModelSerializer):
-    user = PublicProfileSerializer(source='user.profile', read_only=True) # serializers.SerializerMethodField(read_only=True)
-    likes = serializers.SerializerMethodField(read_only=True)
+
     
     class Meta:
         model = Tweet
-        fields = ['user', 'id', 'content', 'image', 'video', 'likes', 'timestamp']
+        fields = ['image']
     
     def get_likes(self, obj):
         return obj.likes.count()
