@@ -178,7 +178,6 @@ def tweet_detail_view_pure_django(request, tweet_id, *args, **kwargs):
     return JsonResponse(data, status=status) # json.dumps content_type='application/json'
 
 # my views
-
 @api_view(['POST'])
 def create_tweet_view(request, *args, **kwags):
     '''

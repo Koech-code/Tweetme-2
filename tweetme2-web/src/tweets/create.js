@@ -1,7 +1,7 @@
 import React from 'react'
 import {apiTweetCreate} from './lookup'
-import ImageUpload from './upload'
-
+import CreateTweet from './createtweets'
+import UploadVideo from './uploadvideo'
 
 export function TweetCreate(props){
   const textAreaRef = React.createRef()
@@ -23,7 +23,8 @@ export function TweetCreate(props){
       textAreaRef.current.value = ''
     }
     return <div className={props.className}>
-      <div><ImageUpload></ImageUpload></div>
+      <div><CreateTweet></CreateTweet></div>
+      <div><UploadVideo></UploadVideo></div>
      
           <form onSubmit={handleSubmit}>
             

@@ -8,8 +8,8 @@ from django.db.models import Q
 User = settings.AUTH_USER_MODEL
 
 # Set upload path and filename
-def upload_to(instance, filename):
-    return 'images/{filename}'.format(filename=filename)
+
+upload_to='images/'
 
 class TweetLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -38,13 +38,10 @@ class TweetManager(models.Manager):
         return self.get_queryset().feed(user)
 
 class Tweet(models.Model):
-    # Maps to SQL data
-    # id = models.AutoField(primary_key=True)
-    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tweets", null=True, blank=True) # many users can many tweets
     likes = models.ManyToManyField(User, related_name='tweet_user', blank=True, through=TweetLike)
     video = models.FileField(upload_to='videos/', blank=True, null=True)
-    image = models.FileField(upload_to=upload_to, blank=True, null=True)
+    image = models.ImageField(upload_to=upload_to, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
