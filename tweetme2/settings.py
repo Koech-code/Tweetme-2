@@ -65,6 +65,8 @@ TWEET_ACTION_OPTIONS = ["like", "unlike", "retweet"]
 
 # Application definition
 
+AUTH_USER_MODEL='tweets.User'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -81,6 +83,7 @@ INSTALLED_APPS = [
     'tweets',
     'drf_yasg',
     'django_heroku',
+    'rest_framework_simplejwt',
 ]
 
 REST_FRAMEWORK = {
@@ -140,6 +143,7 @@ DATABASES = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -213,6 +217,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DEFAULT_AUTHENTICATION_CLASSES = [
     'rest_framework.authentication.SessionAuthentication'
 ]
+
 if DEBUG:
     DEFAULT_RENDERER_CLASSES += [
         'rest_framework.renderers.BrowsableAPIRenderer',

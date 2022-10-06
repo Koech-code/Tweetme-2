@@ -1,3 +1,4 @@
+from base64 import urlsafe_b64decode
 import random
 from django.conf import settings
 from django.http import HttpResponse, Http404, JsonResponse
@@ -11,8 +12,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from ..forms import TweetForm
 from ..models import Tweet, UploadVideo, CommentVideo
-from rest_framework import status
+from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
+from .. models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+from .utils import Mail
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import smart_bytes
+from django.urls import reverse
 from ..serializers import (
     TweetSerializer, 
     TweetActionSerializer,
@@ -20,6 +29,10 @@ from ..serializers import (
     CommentTweetSerializer,
     VideoSerializer,
     CommentVideoSerializer,
+    RegisterSerializer,
+    LoginSerializer,
+    LogoutSerializer,
+    ResetPasswordSerializer,
 )
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
@@ -277,3 +290,68 @@ def see_all_video_comments(request, pk, *args, **kwags):
 
     return Response(serializevideocomments.data)
 
+class RegisterView(generics.GenericAPIView):
+    serializer_class=RegisterSerializer
+
+    def post(self, request):
+        user=request.data
+        serializer=self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        user_data=serializer.data
+        user=User.objects.get(email=user_data['email'])
+
+        token=RefreshToken.for_user(user).access_token
+        
+        email_body='Hi '+user.usrname+' welcome to Gilscore application.'
+
+        data={'email_body':email_body, 'to_email':user.email, 'email_subject': 'Welcome'}
+        Mail.send_email(data)
+        return Response(user_data, status=status.HTTP_201_CREATED )
+
+class LoginView(generics.GenericAPIView):
+    serializer_class=LoginSerializer
+
+    def post(self, request):
+       
+        serializer=self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+   
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class LogoutView(generics.GenericAPIView):
+    serializer_class=LogoutSerializer
+    permission_classes=(permissions.IsAuthenticated,)
+
+    def post(self, request):
+        serializer=self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ResetPasswordView(generics.GenericAPIView):
+
+    serializer_class=ResetPasswordSerializer
+
+    def post(self, request):
+        serializer=self.serializer_class(data=request.data)
+        email=request.data['email']
+
+        if User.objects.filter(email=email).exists():
+        
+            user=User.objects.get(email=email)
+            userid64=urlsafe_base64_encode(smart_bytes(user.id))
+            token=PasswordResetTokenGenerator().make_token(user)
+            current_site=get_current_site(request=request).domain
+            relativeLink=reverse('reset-password', kwargs={'userid64':userid64, 'token':token})
+            absolute_url='http://'+current_site+relativeLink
+
+            email_body='Hello, \n use this link to reset your password \n'+absolute_url
+            data={'email_body':email_body, 'to_email':user.email, 'email_subject':'Reset your password'}
+
+            Mail.send_email(data)
+
+
+        return Response({'success':'An email to reset your password has been sent to you.'}, status=status.HTTP_200_OK)

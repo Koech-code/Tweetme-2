@@ -17,7 +17,7 @@ from .views import (
     see_all_tweet_comments,
 )
 
-from . import views
+from .views import RegisterView, LoginView, LogoutView
 
 '''
 CLIENT
@@ -38,4 +38,8 @@ urlpatterns = [
     path('create/', tweet_create_view),
     path('<int:tweet_id>/', tweet_detail_view),
     path('<int:tweet_id>/delete/', tweet_delete_view),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'), 
+    path('logout/', LogoutView.as_view(), name='logout'), 
+
 ]
