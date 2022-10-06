@@ -7,30 +7,19 @@ const CreateTweet = () => {
     const [content, setContent] = useState(null);
     const [image, setImage] = useState(null);
     const [video, setVideo] = useState(null);
-    const [images, setImages] = useState(null);
+    const [images, setImages] = useState([]);
     const [updated, setUpdated] = useState(false)
 
-    useEffect(()=>{
-        const config = {
-            headers:{
-                'Accept':'application/json',
-            }
-        };
-        const fetData = async () => {
-            try {
-                const res = await axios.get('http://127.0.0.1:8000/api/tweets/getweet/', config);
-                if (res.status === 200){
-                    setImages(res.data.images)
-                    
-                }
-            } catch(err) {
-
-            }
-
-        };
-
-        fetData();
-    }, [updated]);
+useEffect(()=> {
+    axios.get('http://127.0.0.1:8000/api/tweets/getweet/')
+    .then(res =>{
+        console.log(res)
+        setImages(res.data)
+    })
+    .catch((error) => {
+        console.log(error)
+    })
+}, [])
 
     const onFileChange = e => setImage(e.target.files[0]);
     const onVideoChange = e => setVideo(e.target.files[0]);
@@ -96,7 +85,14 @@ const CreateTweet = () => {
                 </div>
                 <div className="offset-1 col-6">
                     <h3>Your tweets</h3>
-                    <img src={"http://localhost:8000/api/tweets/getweet/"} alt ='pizza'></img>
+                    
+                    <ul>
+                        {
+                            images.map(image => 
+                            <li>{image.content}</li>  
+                            )
+                        }
+                    </ul>
                  
 
                 </div>
