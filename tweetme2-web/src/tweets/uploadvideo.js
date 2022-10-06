@@ -91,18 +91,23 @@ const UploadVideo = () => {
   
                         <Button type="submit" variant='success'>Upload</Button>
                     </form>
+                 
                     <br/>
 
                 </div>
                 <div className="offset-1 col-6">
                     <h3>Your videos</h3>
                     <video controls='controls'>Your video</video>
+                    <br/>
+                    <a href="">Comment</a>
+                
                  
-
                 </div>
 
             </div>
+          
         </div>
+
     )
 
 }
